@@ -1,7 +1,6 @@
 import 'package:example/test_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:wizard_builder/wizard_builder.dart';
-import 'package:wizard_builder/wizard_item.dart';
 
 void main() {
   runApp(MyApp());
