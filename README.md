@@ -11,7 +11,7 @@ A Flutter widget for building a wizards UI.
 * The WizardBuilder wil navigate to the firt wizard page in the list.
 * When calling onPush() on the last wizard page the WizardBuilder wil close.
 
-'''
+```
 final navigatorKey = GlobalKey<NavigatorState>();
 
 WizardBuilder(
@@ -23,7 +23,7 @@ WizardBuilder(
     PageTwo(),
   ],
 );
-'''
+```
 
 ## TODO
 - [ ] option for showing back/close button on first page
