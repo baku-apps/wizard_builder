@@ -1,4 +1,4 @@
-# wizard_builder
+# Wizard Builder Widget
 
 A Flutter widget for building a wizards UI. 
 
