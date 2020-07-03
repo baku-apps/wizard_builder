@@ -69,16 +69,14 @@ final navigatorKey = GlobalKey<NavigatorState>();
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: WizardBuilder(
-        navigatorKey: navigatorKey,
-        pages: [
-          PageOne(),
-          PageTwo(closeOnNavigate: true),
-          PageThree(closeOnNavigate: true),
-          PageTwo(),
-        ],
-      ),
+    return WizardBuilder(
+      navigatorKey: navigatorKey,
+      pages: [
+        PageOne(),
+        PageTwo(closeOnNavigate: true),
+        PageThree(closeOnNavigate: true),
+        PageTwo(),
+      ],
     );
   }
 }

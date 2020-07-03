@@ -1,14 +1,40 @@
 # wizard_builder
 
-A new Flutter package project.
+A Flutter widget for building a wizards UI. 
 
-## Getting Started
+## Usage
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+* Create a wizard page by extending a widget from a WizardPage and WizardState. These exposes a onPush(), onPop() and onCloseWizard() method, which can be used in the wizard page.
+* Next create a WizardBuilder
+* Inject a navigation key
+* Inject the list of wizard pages
+* The WizardBuilder wil navigate to the firt wizard page in the list.
+* When calling onPush() on the last wizard page the WizardBuilder wil close.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+'''
+final navigatorKey = GlobalKey<NavigatorState>();
+
+WizardBuilder(
+  navigatorKey: navigatorKey,
+  pages: [
+    PageOne(),
+    PageTwo(closeOnNavigate: true),
+    PageThree(closeOnNavigate: true),
+    PageTwo(),
+  ],
+);
+'''
+
+## TODO
+- [ ] option for showing back/close button on first page
+- [ ] nested pages (or by [][] or by adding another Widgetbuilder)
+- [ ] exposing page transistions
+- [ ] create unit tests
+
+## Issues
+
+Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/baku-apps/wizard_builder/issues) page. Commercial support is available, you can contact us at <bart.kuipers@baku-apps.com>.
+
+## Author
+
+This WizardBuilder widget for Flutter is developed by [BaKu-apps](https://baku-apps.com).
