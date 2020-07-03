@@ -16,7 +16,42 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: RootPage(),
+    );
+  }
+}
+
+class RootPage extends StatefulWidget {
+  RootPage({Key key}) : super(key: key);
+
+  @override
+  _RootPageState createState() => _RootPageState();
+}
+
+class _RootPageState extends State<RootPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Root Page'),
+      ),
+      body: Center(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              FlatButton(
+                child: Text('Go to wizard builder page'),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          MyHomePage(title: 'Wizard Builder Page')));
+                },
+              ),
+              Text('This is the ROOT page'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -39,6 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
         navigatorKey: navigatorKey,
         pages: [
           PageOne(),
+          PageTwo(closeOnNavigate: true),
+          PageThree(closeOnNavigate: true),
           PageTwo(),
         ],
       ),

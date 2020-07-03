@@ -7,12 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wizard_builder/wizard_page.dart';
 
+typedef WizardPageBuilder = WizardPage Function(BuildContext context);
+
 class WizardBuilder extends StatefulWidget {
   WizardBuilder({
     Key key,
-    this.navigatorKey,
-    this.pages,
-  }) : super(key: key);
+    @required this.navigatorKey,
+    @required this.pages,
+  })  : assert(navigatorKey != null),
+        assert(pages != null && pages.isNotEmpty),
+        super(key: key);
 
   final GlobalKey<NavigatorState> navigatorKey;
   final List<WizardPage> pages;
@@ -40,41 +44,37 @@ class WizardBuilderState extends State<WizardBuilder> {
   List<_WizardItem> _fullPageStack = List<_WizardItem>();
   ListQueue<_WizardItem> _currentPageStack = ListQueue();
 
-  @override
-  void initState() {
-    _fullPageStack = _WizardItem.flattenPages([widget.pages]);
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final routeBuilders = _routeBuilders(context);
-
-    return Navigator(
-      key: widget.navigatorKey,
-      initialRoute: routeBuilders.keys.first,
-      onGenerateRoute: (routeSettings) {
-        return MaterialPageRoute(
-          builder: (context) => routeBuilders[routeSettings.name](context),
-        );
-      },
-    );
-  }
-
   int get currentStep => _currentPageStack.last.step;
 
   _WizardItem get currentItem =>
       (_currentPageStack.length > 0) ? _currentPageStack.last : null;
 
-  WizardPage get currentPage => (currentItem != null) ? currentItem.page : null;
+  WizardPage get currentPage =>
+      (currentItem != null) ? currentItem.widget(context) : null;
 
-  //List<WizardPage> get wizardSteps => wizardPagesList;
+  @override
+  void initState() {
+    _fullPageStack = _WizardItem.flattenPages([widget.pages]);
+    _currentPageStack.addLast(_fullPageStack[0]);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      key: widget.navigatorKey,
+      initialRoute: _fullPageStack.first.route,
+      onGenerateRoute: (routeSettings) {
+        return MaterialPageRoute(
+          builder: (context) => _fullPageStack[0].widget(context),
+        );
+      },
+    );
+  }
+
   Future<bool> nextPage() async {
-    final routeBuilders = _routeBuilders(context);
-
     if (_isLastPage()) {
-      _pop(context);
+      closeWizard();
       return true;
     }
 
@@ -83,54 +83,45 @@ class WizardBuilderState extends State<WizardBuilder> {
 
     currentPageIndex = currentPageIndex == -1 ? 0 : currentPageIndex;
 
-    if (currentPage != null && currentPage.closeOnNavigate) {
-      //Todo: use removeBelowRoute to remove the page
-      //https://api.flutter.dev/flutter/widgets/NavigatorState/removeRouteBelow.html
-      closePage(); //close current first before adding new page to stack
-    }
-
     _currentPageStack.addLast(_fullPageStack[currentPageIndex + 1]);
 
-    await _push(
+    await _pushItem(
       context,
-      routeBuilders.keys.toList()[currentPageIndex + 1],
+      _fullPageStack[currentPageIndex + 1],
       isModal: currentPage.isModal,
     );
+
+    _currentPageStack.removeLast();
+    if (_currentPageStack.last.widget(context).closeOnNavigate) {
+      closePage();
+    }
 
     return true;
   }
 
   void closePage() {
     _pop(context);
-    _currentPageStack.removeLast();
   }
 
   void closeWizard() {
-    Navigator.of(context).pop();
+    //TODO: give option to define continuing route...
+    Navigator.of(context).maybePop().then((canPop) {
+      if (!canPop) {
+        throw FlutterError(
+            'The Wizard cannot be closed, because there is no root navigator. Please start the Wizard from a.\n'
+            'root navigator.');
+      }
+    });
   }
 
   bool _isLastPage() {
     return _currentPageStack.length == _fullPageStack.length;
   }
 
-  Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
-    var routes = <String, WidgetBuilder>{};
-    for (var i = 0; i < widget.pages.length; i++) {
-      if (i == 0) {
-        routes['/'] = (context) => widget.pages[i];
-      } else {
-        routes['/{i}'] = (context) => widget.pages[i];
-      }
-    }
-    return routes;
-  }
-
-  Future _push(BuildContext context, String route, {bool isModal}) {
-    final routeBuilders = _routeBuilders(context);
-
+  Future _pushItem(BuildContext context, _WizardItem item, {bool isModal}) {
     return widget.navigatorKey.currentState.push(
       MaterialPageRoute(
-        builder: (context) => routeBuilders[route](context),
+        builder: (context) => item.widget(context),
         fullscreenDialog: isModal,
       ),
     );
@@ -142,24 +133,41 @@ class WizardBuilderState extends State<WizardBuilder> {
 }
 
 class _WizardItem {
-  int step;
-  int index;
-  Widget page;
+  final int step;
+  final int index;
+  final WizardPageBuilder widget;
+  final String route;
 
   static List<_WizardItem> pageStack = List<_WizardItem>();
 
-  _WizardItem(int step, int index, Widget page) {
-    this.step = step;
-    this.index = index;
-    this.page = page;
-  }
+  _WizardItem({this.step, this.index, this.widget, this.route});
 
   static List<_WizardItem> flattenPages(List<List<Widget>> pages) {
     pageStack.clear();
 
     for (var i = 0; i < pages.length; i++) {
       for (var y = 0; y < pages[i].length; y++) {
-        pageStack.add(_WizardItem(i, y, pages[i][y]));
+        //add first route
+        if (i == 0 && y == 0) {
+          pageStack.add(
+            _WizardItem(
+              step: i,
+              index: y,
+              widget: (context) => pages[i][y],
+              route: '/',
+            ),
+          );
+        } else {
+          var uuid = UniqueKey().toString();
+          pageStack.add(
+            _WizardItem(
+              step: i,
+              index: y,
+              widget: (context) => pages[i][y],
+              route: '/$uuid',
+            ),
+          );
+        }
       }
     }
 
