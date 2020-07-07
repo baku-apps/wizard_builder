@@ -9,26 +9,6 @@ import 'package:wizard_builder/wizard_page.dart';
 
 typedef WizardPageBuilder = WizardPage Function(BuildContext context);
 
-class WizardInherited extends InheritedWidget {
-  WizardInherited({Key key}) : super(key: key);
-
-  static WizardInherited of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<WizardInherited>();
-  }
-
-  @override
-  Widget get child => Container();
-
-  @override
-  bool updateShouldNotify(WizardInherited oldWidget) {
-    return true;
-  }
-
-  void onPush(BuildContext context) {
-    WizardBuilder.of(context).nextPage();
-  }
-}
-
 class WizardBuilder extends StatefulWidget {
   WizardBuilder({
     Key key,
@@ -46,16 +26,16 @@ class WizardBuilder extends StatefulWidget {
   @override
   WizardBuilderState createState() => WizardBuilderState();
 
-  static WizardBuilderState of(BuildContext context) {
+  static WizardBuilderState of(BuildContext context, {bool nullOk = false}) {
     final WizardBuilderState wizard =
         context.findAncestorStateOfType<WizardBuilderState>();
     assert(() {
-      // if (wizard == null) {
-      //   throw FlutterError(
-      //       'WizardBuilder operation requested with a context that does not include a WizardBuilder.\n'
-      //       'The context used to push or pop routes from the WizardBuilder must be that of a '
-      //       'widget that is a descendant of a WizardBuilder widget.');
-      // }
+      if (wizard == null && !nullOk) {
+        throw FlutterError(
+            'WizardBuilder operation requested with a context that does not include a WizardBuilder.\n'
+            'The context used to push or pop routes from the WizardBuilder must be that of a '
+            'widget that is a descendant of a WizardBuilder widget.');
+      }
       return true;
     }());
     return wizard;
@@ -177,7 +157,7 @@ class WizardBuilderState<T extends StatefulWidget> extends State<WizardBuilder>
   Future closeWizard() async {
     _fullPageStack = _WizardItem.flattenPages(widget.pages);
     _currentPageStack = widget.widgetPageStack;
-    var parentWizard = WizardBuilder.of(context);
+    var parentWizard = WizardBuilder.of(context, nullOk: true);
     if (parentWizard != null) {
       await parentWizard.nextPage();
       return;
