@@ -19,6 +19,9 @@ abstract class WizardState<Page extends WizardPage> extends State<WizardPage> {
   /// Push the next page on the wizard page stack
   /// If this is the last page the wizard is closed
   void onPush() {
+    //WizardBuilder.of(context).pushController.sink.add(null);
+    //TODO: add optional parameters to nextPage() to override the isModal or closeOnNavigation properties.
+    //This to give more flexibility on navigation behavior.
     WizardBuilder.of(context).nextPage();
   }
 

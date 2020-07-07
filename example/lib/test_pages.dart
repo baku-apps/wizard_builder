@@ -13,7 +13,7 @@ class _PageOneState extends WizardState<PageOne> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: CloseButton(onPressed: () => onPopWizard()),
+        leading: CloseButton(onPressed: () => onPop()),
         title: Text('Page ONE'),
       ),
       body: Center(
@@ -44,10 +44,11 @@ class _PageOneState extends WizardState<PageOne> {
 //-------------------------------------
 
 class PageTwo extends WizardPage {
-  const PageTwo({Key key, this.closeOnNavigate = false})
+  const PageTwo({Key key, this.closeOnNavigate = false, this.debugLabel})
       : super(key: key, closeOnNavigate: closeOnNavigate);
 
   final bool closeOnNavigate;
+  final String debugLabel;
 
   @override
   _PageTwoState createState() => _PageTwoState();
@@ -80,10 +81,11 @@ class _PageTwoState extends WizardState<PageTwo> {
 }
 
 class PageThree extends WizardPage {
-  const PageThree({Key key, this.closeOnNavigate = false})
+  const PageThree({Key key, this.closeOnNavigate = false, this.debugLabel})
       : super(key: key, closeOnNavigate: closeOnNavigate);
 
   final bool closeOnNavigate;
+  final String debugLabel;
 
   @override
   _PageThreeState createState() => _PageThreeState();
@@ -94,7 +96,7 @@ class _PageThreeState extends WizardState<PageThree> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Page TWO'),
+        title: Text('Page Three'),
       ),
       body: Center(
         child: Container(
@@ -106,7 +108,43 @@ class _PageThreeState extends WizardState<PageThree> {
                   onPush();
                 },
               ),
-              Text('Page two'),
+              Text('Page three'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PageFour extends WizardPage {
+  const PageFour({Key key, this.closeOnNavigate = false})
+      : super(key: key, closeOnNavigate: closeOnNavigate);
+
+  final bool closeOnNavigate;
+
+  @override
+  _PageFourState createState() => _PageFourState();
+}
+
+class _PageFourState extends WizardState<PageFour> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Page Four'),
+      ),
+      body: Center(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              FlatButton(
+                child: Text('Go to next page'),
+                onPressed: () {
+                  onPush();
+                },
+              ),
+              Text('Page four'),
             ],
           ),
         ),

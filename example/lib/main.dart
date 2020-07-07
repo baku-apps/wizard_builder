@@ -64,19 +64,54 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-final navigatorKey = GlobalKey<NavigatorState>();
+final navigatorKey1 = GlobalKey<NavigatorState>(debugLabel: 'NAV LEVEL-1');
+final navigatorKey2 = GlobalKey<NavigatorState>(debugLabel: 'NAV LEVEL-2');
+final navigatorKey3 = GlobalKey<NavigatorState>(debugLabel: 'NAV LEVEL-3');
+
+final one = GlobalKey<WizardBuilderState>(debugLabel: 'WIZ LEVEL-1');
+final two = GlobalKey<WizardBuilderState>(debugLabel: 'WIZ LEVEL-2');
+final three = GlobalKey<WizardBuilderState>(debugLabel: 'WIZ LEVEL-3');
+
+Widget buildWizardBuilder() {
+  return WizardBuilder(
+    key: one,
+    navigatorKey: navigatorKey1,
+    pages: [
+      PageOne(),
+      WizardBuilder(
+        key: two,
+        navigatorKey: navigatorKey2,
+        pages: [
+          PageTwo(
+            debugLabel: 'PAGE 1',
+          ),
+          PageThree(
+            debugLabel: 'PAGE 1',
+            closeOnNavigate: true,
+          )
+        ],
+      ),
+      PageFour(),
+      WizardBuilder(
+        key: three,
+        navigatorKey: navigatorKey3,
+        pages: [
+          PageTwo(
+            closeOnNavigate: true,
+            debugLabel: 'PAGE 2',
+          ),
+          PageThree(
+            debugLabel: 'PAGE 2',
+          )
+        ],
+      ),
+    ],
+  );
+}
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return WizardBuilder(
-      navigatorKey: navigatorKey,
-      pages: [
-        PageOne(),
-        PageTwo(closeOnNavigate: true),
-        PageThree(closeOnNavigate: true),
-        PageTwo(),
-      ],
-    );
+    return buildWizardBuilder();
   }
 }
