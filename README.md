@@ -1,34 +1,51 @@
 # Wizard Builder Widget
 
-A Flutter widget for building a wizards UI. 
+A Flutter widget for building a wizards UI.
 
 ## Usage
 
-* Create a wizard page by extending a widget from a WizardPage and WizardState. These exposes a onPush(), onPop() and onCloseWizard() method, which can be used in the wizard page.
-* Next create a WizardBuilder
-* Inject a navigation key
-* Inject the list of wizard pages
-* The WizardBuilder wil navigate to the firt wizard page in the list.
-* When calling onPush() on the last wizard page the WizardBuilder wil close.
+- Create a wizard page by extending a widget from a WizardPage and WizardState. These exposes a onPush(), onPop() and onCloseWizard() method, which can be used in the wizard page.
+- Next create a WizardBuilder
+- Inject a navigation key
+- Inject the list of wizard pages
+- The WizardBuilder wil navigate to the firt wizard page in the list.
+- When calling onPush() on the last wizard page the WizardBuilder wil close.
 
 ```dart
-final navigatorKey = GlobalKey<NavigatorState>();
+final navigatorKey1 = GlobalKey<NavigatorState>();
+final navigatorKey2 = GlobalKey<NavigatorState>();
+final navigatorKey3 = GlobalKey<NavigatorState>();
 
 WizardBuilder(
-  navigatorKey: navigatorKey,
+  navigatorKey: navigatorKey1,
   pages: [
     PageOne(),
-    PageTwo(closeOnNavigate: true),
-    PageThree(closeOnNavigate: true),
-    PageTwo(),
+    WizardBuilder(
+      navigatorKey: navigatorKey2,
+      pages: [
+        PageTwo(),
+        WizardBuilder(
+          navigatorKey: navigatorKey3,
+          pages: [
+            PageTwo(closeOnNavigate: true),
+            PageThree(),
+          ],
+        ),
+        PageThree(closeOnNavigate: true)
+      ],
+    ),
+    PageFour(),
   ],
 );
 ```
 
 ## TODO
+
 - [ ] option for showing back/close button on first page
-- [ ] nested pages (or by [][] or by adding another Widgetbuilder)
+- [x] correct android onbackpress button behavior
+- [x] nested pages (or by [][] or by adding another Widgetbuilder)
 - [ ] exposing page transistions
+- [ ] ability to pass arguments/parameters to a page from the nextPage()
 - [ ] create unit tests
 
 ## Issues

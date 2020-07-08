@@ -11,7 +11,7 @@ abstract class WizardPage extends StatefulWidget {
   /// Opens de wizard page in fullscreen mode (default = false)
   final bool isModal;
 
-  /// When true this page will close when the page above in the stack is closed.
+  /// When true this page will close when the page above in the stack is closed (default = false).
   final bool closeOnNavigate;
 }
 
@@ -19,9 +19,6 @@ abstract class WizardState<Page extends WizardPage> extends State<WizardPage> {
   /// Push the next page on the wizard page stack
   /// If this is the last page the wizard is closed
   void onPush() {
-    //WizardBuilder.of(context).pushController.sink.add(null);
-    //TODO: add optional parameters to nextPage() to override the isModal or closeOnNavigation properties.
-    //This to give more flexibility on navigation behavior.
     WizardBuilder.of(context).nextPage();
   }
 

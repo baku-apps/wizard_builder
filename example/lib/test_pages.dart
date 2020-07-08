@@ -44,11 +44,8 @@ class _PageOneState extends WizardState<PageOne> {
 //-------------------------------------
 
 class PageTwo extends WizardPage {
-  const PageTwo({Key key, this.closeOnNavigate = false, this.debugLabel})
-      : super(key: key, closeOnNavigate: closeOnNavigate);
-
-  final bool closeOnNavigate;
-  final String debugLabel;
+  const PageTwo({Key key, bool closeOnNavigate = false})
+      : super(key: key, closeOnNavigate: closeOnNavigate, isModal: true);
 
   @override
   _PageTwoState createState() => _PageTwoState();
@@ -80,12 +77,11 @@ class _PageTwoState extends WizardState<PageTwo> {
   }
 }
 
-class PageThree extends WizardPage {
-  const PageThree({Key key, this.closeOnNavigate = false, this.debugLabel})
-      : super(key: key, closeOnNavigate: closeOnNavigate);
+//-------------------------------------
 
-  final bool closeOnNavigate;
-  final String debugLabel;
+class PageThree extends WizardPage {
+  const PageThree({Key key, bool closeOnNavigate = false})
+      : super(key: key, closeOnNavigate: closeOnNavigate);
 
   @override
   _PageThreeState createState() => _PageThreeState();
@@ -117,11 +113,11 @@ class _PageThreeState extends WizardState<PageThree> {
   }
 }
 
-class PageFour extends WizardPage {
-  const PageFour({Key key, this.closeOnNavigate = false})
-      : super(key: key, closeOnNavigate: closeOnNavigate);
+//-------------------------------------
 
-  final bool closeOnNavigate;
+class PageFour extends WizardPage {
+  const PageFour({Key key, bool closeOnNavigate = false})
+      : super(key: key, closeOnNavigate: closeOnNavigate);
 
   @override
   _PageFourState createState() => _PageFourState();

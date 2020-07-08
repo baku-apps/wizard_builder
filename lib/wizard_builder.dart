@@ -74,7 +74,8 @@ class WizardBuilderState<T extends StatefulWidget> extends State<WizardBuilder>
     _currentPageStack = widget.widgetPageStack;
     return WillPopScope(
       onWillPop: () {
-        var currentPage = _currentPageStack.last.widget(context);
+        var currentItem = _currentPageStack.last;
+        var currentPage = currentItem.widget(context);
         if (currentPage is WizardBuilder) {
           if (currentPage.widgetPageStack.length > 1) {
             currentPage.navigatorKey.currentState.pop();
@@ -86,6 +87,10 @@ class WizardBuilderState<T extends StatefulWidget> extends State<WizardBuilder>
         }
 
         if (currentPage is WizardPage) {
+          if (currentItem.isFirst) {
+            return Future.value(true);
+          }
+
           widget.navigatorKey.currentState.pop();
           return Future.value(false);
         }
@@ -97,16 +102,12 @@ class WizardBuilderState<T extends StatefulWidget> extends State<WizardBuilder>
         observers: [routeObserver],
         initialRoute: _fullPageStack.first.route,
         onGenerateRoute: (routeSettings) {
-          return initialRoute();
+          return MaterialPageRoute(
+            builder: (context) => _fullPageStack[0].widget(context),
+            settings: RouteSettings(name: _fullPageStack[0].route),
+          );
         },
       ),
-    );
-  }
-
-  initialRoute() {
-    return MaterialPageRoute(
-      builder: (context) => _fullPageStack[0].widget(context),
-      settings: RouteSettings(name: '/'),
     );
   }
 
@@ -197,22 +198,28 @@ class WizardBuilderState<T extends StatefulWidget> extends State<WizardBuilder>
 class _WizardItem {
   final int index;
   final WidgetBuilder widget;
-  final WizardPage page;
+  final Widget page;
   final String route;
   final bool isModal;
+  final bool isFirst;
 
   static List<_WizardItem> pageStack = List<_WizardItem>();
 
   _WizardItem(
-      {this.index, this.widget, this.page, this.route, this.isModal = false});
+      {this.index,
+      this.widget,
+      this.page,
+      this.route,
+      this.isFirst,
+      this.isModal = false});
 
   static List<_WizardItem> flattenPages(List<Widget> pages) {
     pageStack.clear();
 
     for (var i = 0; i < pages.length; i++) {
-      //add initial route as '/'
-      WizardPage wizPage = pages[i];
+      Widget wizPage = pages[i];
       String route = (i == 0) ? '/' : '/${UniqueKey().toString()}';
+      bool isFirst = i == 0;
 
       pageStack.add(
         _WizardItem(
@@ -220,7 +227,8 @@ class _WizardItem {
             widget: (context) => wizPage,
             page: wizPage,
             route: route,
-            isModal: wizPage.isModal),
+            isFirst: isFirst,
+            isModal: (wizPage is WizardPage) ? wizPage.isModal : false),
       );
     }
 
