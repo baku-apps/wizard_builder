@@ -15,7 +15,7 @@ abstract class WizardPage extends StatefulWidget {
   final bool closeOnNavigate;
 }
 
-abstract class WizardState<Page extends WizardPage> extends State<WizardPage> {
+abstract class WizardState<Page extends WizardPage> extends State<Page> {
   /// Push the next page on the wizard page stack
   /// If this is the last page the wizard is closed
   void onPush() {

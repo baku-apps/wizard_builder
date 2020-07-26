@@ -1,3 +1,6 @@
+## [1.1.1]
+* Fix to point State generic to actual page type (not WizardPage)
+
 ## [1.1.0]
 
 * Can use nested WizardBuilders to create nested navigation wizards
