@@ -57,6 +57,9 @@ class _PageTwoState extends WizardState<PageTwo> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Page TWO'),
+        leading: BackButton(
+          onPressed: () => onPop(),
+        ),
       ),
       body: Center(
         child: Container(
