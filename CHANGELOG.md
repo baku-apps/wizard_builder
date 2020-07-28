@@ -1,4 +1,4 @@
-## [1.2.0]
+## [1.2.0] - 28/07/2020
 
 * rewritten and fixed popping a page of wizard tree.
 * rewrite and fix willPopScope logic for android back button override
