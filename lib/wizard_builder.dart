@@ -198,15 +198,12 @@ class WizardBuilderState<T extends StatefulWidget>
     }
 
     if (!state.currentItem.isFirst) {
-      print('pop from nav key');
       return state.widget.navigatorKey.currentState;
     } else {
       var parent = WizardBuilder.of(state.context, nullOk: true);
       if (parent != null) {
-        print('find parent wizard builder');
         return _traverseWizardBuilder(parent);
       } else {
-        print('root navigator');
         return Navigator.of(state.context);
       }
     }

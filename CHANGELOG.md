@@ -1,3 +1,7 @@
+## [1.2.1] - 28/07/2020
+
+* remove debug comments
+
 ## [1.2.0] - 28/07/2020
 
 * rewritten and fixed popping a page of wizard tree.
