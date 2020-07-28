@@ -62,10 +62,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigatorKey1 = GlobalKey<NavigatorState>(debugLabel: 'NAV KEY 1111');
-    final navigatorKey2 = GlobalKey<NavigatorState>(debugLabel: 'NAV KEY 2222');
-    final navigatorKey3 = GlobalKey<NavigatorState>(debugLabel: 'NAV KEY 3333');
-
     return WizardBuilder(
       pages: [
         PageOne(),
@@ -78,7 +74,7 @@ class HomePage extends StatelessWidget {
                 PageFour(),
               ],
             ),
-            //PageThree()
+            PageTwo()
           ],
         ),
         PageOne(),

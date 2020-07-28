@@ -1,3 +1,7 @@
+## [1.2.2] - 28/07/2020
+
+* clean up example code
+
 ## [1.2.1] - 28/07/2020
 
 * remove debug comments
