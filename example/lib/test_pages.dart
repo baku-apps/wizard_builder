@@ -45,7 +45,7 @@ class _PageOneState extends WizardState<PageOne> {
 
 class PageTwo extends WizardPage {
   const PageTwo({Key key, bool closeOnNavigate = false})
-      : super(key: key, closeOnNavigate: closeOnNavigate, isModal: true);
+      : super(key: key, closeOnNavigate: closeOnNavigate);
 
   @override
   _PageTwoState createState() => _PageTwoState();

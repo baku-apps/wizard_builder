@@ -12,10 +12,9 @@ typedef WizardPageBuilder = WizardPage Function(BuildContext context);
 class WizardBuilder extends StatefulWidget {
   WizardBuilder({
     Key key,
-    @required this.navigatorKey,
     @required this.pages,
   })  : controller = StreamController(),
-        //navigatorKey = GlobalKey<NavigatorState>(),
+        navigatorKey = GlobalKey<NavigatorState>(),
         assert(pages != null && pages.isNotEmpty),
         super(key: key);
 
@@ -66,30 +65,32 @@ class WizardBuilderState<T extends StatefulWidget>
     super.initState();
   }
 
+  WizardBuilderState currentWizardBuilder;
+
+  //TODO: let child WizardBuilders be aware of their parents (have a property of their parents so we can quickly traverse back)
+  NavigatorState _traverseCurrentContext(WizardBuilder widget) {
+    var page = widget.widgetPageStack.last.page;
+    if (page is WizardBuilder) {
+      if (page.widgetPageStack.length > 1) {
+        return _traverseCurrentContext(page);
+      } else {
+        return widget.navigatorKey.currentState;
+      }
+    } else {
+      return widget.navigatorKey.currentState;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    currentWizardBuilder = this;
     _fullPageStack = _WizardItem.flattenPages(widget.pages);
     _currentPageStack = widget.widgetPageStack;
     return WillPopScope(
       onWillPop: () {
-        var currentItem = _currentPageStack.last;
-        var currentPage = currentItem.widget(context);
-        if (currentPage is WizardBuilder) {
-          if (currentPage.widgetPageStack.length > 1) {
-            currentPage.navigatorKey.currentState.pop();
-            return Future.value(false);
-          }
-
-          Navigator.of(context).pop();
-          return Future.value(false);
-        } else {
-          if (currentItem.isFirst) {
-            return Future.value(true);
-          }
-
-          widget.navigatorKey.currentState.pop();
-          return Future.value(false);
-        }
+        var currentNavigator = _traverseCurrentContext(widget);
+        currentNavigator.pop();
+        return Future.value(false);
       },
       child: Navigator(
         key: widget.navigatorKey,
@@ -130,15 +131,17 @@ class WizardBuilderState<T extends StatefulWidget>
 
     var currentPage = widget.widgetPageStack.last.widget(context);
     if (currentPage is WizardBuilder) {
-      var lastPage = currentPage.pages.cast<WizardPage>().last;
-      if (lastPage.closeOnNavigate) {
-        currentPage.navigatorKey.currentState.pop();
+      var lastPage = currentPage.pages.last;
+      if (lastPage is WizardPage) {
+        if (lastPage.closeOnNavigate) {
+          currentPage.navigatorKey.currentState.pop();
+        }
       }
     }
 
     if (currentPage is WizardPage) {
       if (currentPage.closeOnNavigate) {
-        closePage();
+        _pop();
       }
     }
 
@@ -158,15 +161,8 @@ class WizardBuilderState<T extends StatefulWidget>
       return;
     }
 
-    //reached the end of the wizard and close it all
-    var rootNav = Navigator.of(context, rootNavigator: true);
-    if (rootNav.canPop()) {
-      rootNav.pop();
-    } else {
-      throw FlutterError(
-          'The Wizard cannot be closed, because there is no root navigator. Please start the Wizard from a.\n'
-          'root navigator.');
-    }
+    var navigator = _traverseWizardBuilder(this, rootNavigator: true);
+    navigator.pop();
   }
 
   bool _isLastPage() {
@@ -185,22 +181,33 @@ class WizardBuilderState<T extends StatefulWidget>
   }
 
   void _pop() async {
-    _traverseWizardBuilder(this);
+    var navigator = _traverseWizardBuilder(this);
+    navigator.pop();
     return;
   }
 
-  void _traverseWizardBuilder(WizardBuilderState state) {
+  NavigatorState _traverseWizardBuilder(WizardBuilderState state,
+      {bool rootNavigator = false}) {
+    if (rootNavigator) {
+      var parent = WizardBuilder.of(state.context, nullOk: true);
+      if (parent != null) {
+        return _traverseWizardBuilder(parent);
+      } else {
+        return Navigator.of(state.context);
+      }
+    }
+
     if (!state.currentItem.isFirst) {
-      print('pop from navKey');
-      state.widget.navigatorKey.currentState.pop();
+      print('pop from nav key');
+      return state.widget.navigatorKey.currentState;
     } else {
       var parent = WizardBuilder.of(state.context, nullOk: true);
       if (parent != null) {
-        print('traverse to parent');
-        _traverseWizardBuilder(parent);
+        print('find parent wizard builder');
+        return _traverseWizardBuilder(parent);
       } else {
-        print('pop from root');
-        Navigator.of(state.context).pop();
+        print('root navigator');
+        return Navigator.of(state.context);
       }
     }
   }
@@ -213,7 +220,7 @@ class _WizardItem {
   final String route;
   final bool isModal;
   final bool isFirst;
-  final GlobalKey<NavigatorState> parentNavigator;
+  final GlobalKey<NavigatorState> navigationKey;
 
   static List<_WizardItem> pageStack = List<_WizardItem>();
 
@@ -224,7 +231,7 @@ class _WizardItem {
       this.route,
       this.isFirst,
       this.isModal = false,
-      this.parentNavigator});
+      this.navigationKey});
 
   static List<_WizardItem> flattenPages(List<Widget> pages) {
     pageStack.clear();
@@ -233,6 +240,10 @@ class _WizardItem {
       Widget wizPage = pages[i];
       String route = (i == 0) ? '/' : '/${UniqueKey().toString()}';
       bool isFirst = i == 0;
+      GlobalKey<NavigatorState> navKey;
+      if (wizPage is WizardBuilder) {
+        navKey = wizPage.navigatorKey;
+      }
 
       pageStack.add(
         _WizardItem(
@@ -241,7 +252,7 @@ class _WizardItem {
             page: wizPage,
             route: route,
             isFirst: isFirst,
-            parentNavigator: null,
+            navigationKey: navKey,
             isModal: (wizPage is WizardPage) ? wizPage.isModal : false),
       );
     }
