@@ -12,20 +12,13 @@ A Flutter widget for building a wizards UI.
 - When calling onPush() on the last wizard page the WizardBuilder wil close.
 
 ```dart
-final navigatorKey1 = GlobalKey<NavigatorState>();
-final navigatorKey2 = GlobalKey<NavigatorState>();
-final navigatorKey3 = GlobalKey<NavigatorState>();
-
 WizardBuilder(
-  navigatorKey: navigatorKey1,
   pages: [
     PageOne(),
     WizardBuilder(
-      navigatorKey: navigatorKey2,
       pages: [
         PageTwo(),
         WizardBuilder(
-          navigatorKey: navigatorKey3,
           pages: [
             PageTwo(closeOnNavigate: true),
             PageThree(),
