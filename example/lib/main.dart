@@ -71,48 +71,10 @@ class HomePage extends StatelessWidget {
             WizardBuilder(
               pages: [
                 PageThree(),
-                PageFour(),
+                PageFour(closeOnNavigate: true),
               ],
             ),
             PageTwo()
-          ],
-        ),
-        PageOne(),
-        PageFour(),
-      ],
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final navigatorKey1 = GlobalKey<NavigatorState>();
-  final navigatorKey2 = GlobalKey<NavigatorState>();
-  final navigatorKey3 = GlobalKey<NavigatorState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return WizardBuilder(
-      pages: [
-        PageOne(),
-        WizardBuilder(
-          pages: [
-            PageTwo(),
-            // WizardBuilder(
-            //   navigatorKey: navigatorKey3,
-            //   pages: [
-            //     PageTwo(closeOnNavigate: true),
-            //     PageThree(),
-            //   ],
-            // ),
-            PageThree(closeOnNavigate: true)
           ],
         ),
         PageOne(),

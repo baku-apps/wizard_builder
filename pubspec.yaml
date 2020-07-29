@@ -1,6 +1,6 @@
 name: wizard_builder
 description: A wizard builder widget to easily create a wizard (with nested navigation).
-version: 1.2.3
+version: 1.2.4
 homepage: https://github.com/baku-apps/wizard_builder
 
 environment:

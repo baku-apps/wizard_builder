@@ -1,4 +1,8 @@
-## [1.2.3] - 28/07/2020
+## [1.2.4] - 29/07/2020
+
+* clean up more unused code
+
+## [1.2.3] - 29/07/2020
 
 * clean up unused field
 
