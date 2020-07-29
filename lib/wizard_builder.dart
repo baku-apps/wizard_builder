@@ -46,7 +46,6 @@ class WizardBuilder extends StatefulWidget {
 class WizardBuilderState<T extends StatefulWidget>
     extends State<WizardBuilder> {
   List<_WizardItem> _fullPageStack = List<_WizardItem>();
-  ListQueue<_WizardItem> _currentPageStack = ListQueue();
 
   _WizardItem get currentItem =>
       (widget.widgetPageStack.length > 0) ? widget.widgetPageStack.last : null;
@@ -60,7 +59,6 @@ class WizardBuilderState<T extends StatefulWidget>
 
     widget.widgetPageStack.clear();
     widget.widgetPageStack.addLast(_fullPageStack[0]);
-    _currentPageStack = widget.widgetPageStack;
 
     super.initState();
   }
@@ -85,7 +83,6 @@ class WizardBuilderState<T extends StatefulWidget>
   Widget build(BuildContext context) {
     currentWizardBuilder = this;
     _fullPageStack = _WizardItem.flattenPages(widget.pages);
-    _currentPageStack = widget.widgetPageStack;
     return WillPopScope(
       onWillPop: () {
         var currentNavigator = _traverseCurrentContext(widget);
@@ -108,7 +105,6 @@ class WizardBuilderState<T extends StatefulWidget>
 
   Future<bool> nextPage() async {
     _fullPageStack = _WizardItem.flattenPages(widget.pages);
-    _currentPageStack = widget.widgetPageStack;
     if (_isLastPage()) {
       closeWizard();
       return true;
@@ -120,14 +116,12 @@ class WizardBuilderState<T extends StatefulWidget>
     currentPageIndex = currentPageIndex == -1 ? 0 : currentPageIndex;
 
     widget.widgetPageStack.addLast(_fullPageStack[currentPageIndex + 1]);
-    _currentPageStack = widget.widgetPageStack;
 
     _WizardItem nextPage = _fullPageStack[currentPageIndex + 1];
 
     await _pushItem(context, nextPage);
 
     widget.widgetPageStack.removeLast();
-    _currentPageStack = widget.widgetPageStack;
 
     var currentPage = widget.widgetPageStack.last.widget(context);
     if (currentPage is WizardBuilder) {
@@ -154,7 +148,6 @@ class WizardBuilderState<T extends StatefulWidget>
 
   Future closeWizard() async {
     _fullPageStack = _WizardItem.flattenPages(widget.pages);
-    _currentPageStack = widget.widgetPageStack;
     var parentWizard = WizardBuilder.of(context, nullOk: true);
     if (parentWizard != null) {
       await parentWizard.nextPage();
