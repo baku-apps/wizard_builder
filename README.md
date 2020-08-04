@@ -14,20 +14,21 @@ A Flutter widget for building a wizards UI.
 ```dart
 WizardBuilder(
   pages: [
-    PageOne(),
-    WizardBuilder(
+    (_) => PageOne(),
+    (_) => WizardBuilder(
       pages: [
-        PageTwo(),
-        WizardBuilder(
-          pages: [
-            PageTwo(closeOnNavigate: true),
-            PageThree(),
-          ],
-        ),
-        PageThree(closeOnNavigate: true)
+        (_) => PageTwo(),
+        (_) => WizardBuilder(
+              pages: [
+                (_) => PageThree(),
+                (_) => PageFour(closeOnNavigate: true),
+              ],
+            ),
+        (_) => PageTwo()
       ],
     ),
-    PageFour(),
+    (_) => PageOne(),
+    (_) => PageFour(),
   ],
 );
 ```

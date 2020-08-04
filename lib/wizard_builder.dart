@@ -19,7 +19,7 @@ class WizardBuilder extends StatefulWidget {
         super(key: key);
 
   final GlobalKey<NavigatorState> navigatorKey;
-  final List<Widget> pages;
+  final List<WidgetBuilder> pages;
   final ListQueue<_WizardItem> widgetPageStack = ListQueue();
 
   @override
@@ -67,7 +67,7 @@ class WizardBuilderState<T extends StatefulWidget>
 
   //TODO: let child WizardBuilders be aware of their parents (have a property of their parents so we can quickly traverse back)
   NavigatorState _traverseCurrentContext(WizardBuilder widget) {
-    var page = widget.widgetPageStack.last.page;
+    var page = widget.widgetPageStack.last.widget(context);
     if (page is WizardBuilder) {
       if (page.widgetPageStack.length > 1) {
         return _traverseCurrentContext(page);
@@ -125,7 +125,7 @@ class WizardBuilderState<T extends StatefulWidget>
 
     var currentPage = widget.widgetPageStack.last.widget(context);
     if (currentPage is WizardBuilder) {
-      var lastPage = currentPage.pages.last;
+      var lastPage = currentPage.pages.last(context);
       if (lastPage is WizardPage) {
         if (lastPage.closeOnNavigate) {
           currentPage.navigatorKey.currentState.pop();
@@ -190,7 +190,7 @@ class WizardBuilderState<T extends StatefulWidget>
       }
     }
 
-    if (!state.currentItem.isFirst) {
+    if (!state.currentItem?.isFirst) {
       return state.widget.navigatorKey.currentState;
     } else {
       var parent = WizardBuilder.of(state.context, nullOk: true);
@@ -208,42 +208,33 @@ class _WizardItem {
   final WidgetBuilder widget;
   final Widget page;
   final String route;
-  final bool isModal;
   final bool isFirst;
-  final GlobalKey<NavigatorState> navigationKey;
 
   static List<_WizardItem> pageStack = List<_WizardItem>();
 
-  _WizardItem(
-      {this.index,
-      this.widget,
-      this.page,
-      this.route,
-      this.isFirst,
-      this.isModal = false,
-      this.navigationKey});
+  _WizardItem({
+    this.index,
+    this.widget,
+    this.page,
+    this.route,
+    this.isFirst,
+  });
 
-  static List<_WizardItem> flattenPages(List<Widget> pages) {
+  static List<_WizardItem> flattenPages(List<WidgetBuilder> pages) {
     pageStack.clear();
 
     for (var i = 0; i < pages.length; i++) {
-      Widget wizPage = pages[i];
+      WidgetBuilder wizPage = pages[i];
       String route = (i == 0) ? '/' : '/${UniqueKey().toString()}';
       bool isFirst = i == 0;
-      GlobalKey<NavigatorState> navKey;
-      if (wizPage is WizardBuilder) {
-        navKey = wizPage.navigatorKey;
-      }
 
       pageStack.add(
         _WizardItem(
-            index: i,
-            widget: (context) => wizPage,
-            page: wizPage,
-            route: route,
-            isFirst: isFirst,
-            navigationKey: navKey,
-            isModal: (wizPage is WizardPage) ? wizPage.isModal : false),
+          index: i,
+          widget: (context) => wizPage(context),
+          route: route,
+          isFirst: isFirst,
+        ),
       );
     }
 
@@ -252,6 +243,6 @@ class _WizardItem {
 
   @override
   String toString() {
-    return '$index -> $route : ${page.toString()}';
+    return '$index -> $route : ${widget.toString()}';
   }
 }

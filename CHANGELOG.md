@@ -1,3 +1,8 @@
+## [2.0.0] - 04/08/2020
+
+* WizardBuilder takes list of WidgetBuilders as pages to inject parameters in widgets
+* updated README.md
+
 ## [1.2.4] - 29/07/2020
 
 * clean up more unused code

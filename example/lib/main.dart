@@ -64,21 +64,21 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return WizardBuilder(
       pages: [
-        PageOne(),
-        WizardBuilder(
-          pages: [
-            PageTwo(),
-            WizardBuilder(
+        (_) => PageOne(),
+        (_) => WizardBuilder(
               pages: [
-                PageThree(),
-                PageFour(closeOnNavigate: true),
+                (_) => PageTwo(),
+                (_) => WizardBuilder(
+                      pages: [
+                        (_) => PageThree(),
+                        (_) => PageFour(closeOnNavigate: true),
+                      ],
+                    ),
+                (_) => PageTwo()
               ],
             ),
-            PageTwo()
-          ],
-        ),
-        PageOne(),
-        PageFour(),
+        (_) => PageOne(),
+        (_) => PageFour(),
       ],
     );
   }
