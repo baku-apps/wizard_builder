@@ -1,4 +1,4 @@
-## [2.0.0] - 07/08/2020
+## [2.0.1] - 07/08/2020
 
 * Added pedantic linting to analysis-options
 * Fixed linting warning
