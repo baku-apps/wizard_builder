@@ -190,7 +190,7 @@ class WizardBuilderState<T extends StatefulWidget>
       }
     }
 
-    if (!state.currentItem?.isFirst) {
+    if (state.currentItem != null && !state.currentItem.isFirst) {
       return state.widget.navigatorKey.currentState;
     } else {
       var parent = WizardBuilder.of(state.context, nullOk: true);
